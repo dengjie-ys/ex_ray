@@ -147,7 +147,7 @@ defmodule ExRay do
     ctx = quote do
       ctx = %ExRay.Context{
         target: unquote(fun),
-        args:   unquote(params),
+        args:   unquote(params |> Enum.map(&ExRay.Args.get_param_name)),
         guards: unquote(guard),
         meta:   unquote(meta |> List.first)
       }
@@ -176,7 +176,7 @@ defmodule ExRay do
 
           pre = unquote(pre)(ctx)
           try do
-            super(unquote_splicing(params))
+            super(unquote_splicing(params|> Enum.map(&ExRay.Args.get_param_name)))
           rescue
             err -> unquote(post)(ctx, pre, err)
                    throw err

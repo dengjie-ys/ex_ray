@@ -3,10 +3,10 @@ defmodule ExRay.Mixfile do
 
   def project do
     [
-      app:               :ex_ray,
-      version:           "0.1.4",
+      app:               :ex_ray_d,
+      version:           "0.1.1",
       description:       description(),
-      source_url:        "https://github.com/derailed/ex_ray",
+      source_url:        "https://github.com/dengjie-ys/ex_ray",
       package:           package(),
       docs:              docs(),
       elixir:            "~> 1.5",
@@ -30,7 +30,7 @@ defmodule ExRay.Mixfile do
   defp deps do
     [
       {:otter         , "~> 0.4.0"},
-      {:ex_doc        , "~> 0.18.1", only: :dev, runtime: false},
+      {:ex_doc        , "~> 0.25.1", only: :dev, runtime: false},
       {:dogma         , "~> 0.1.15", only: :dev},
       {:credo         , "~> 0.8"   , only: [:dev, :test], runtime: false},
       {:excoveralls   , "~> 0.7.4" , only: :test},
@@ -49,10 +49,10 @@ defmodule ExRay.Mixfile do
   defp package do
     [
       licenses:    ["Apache 2.0"],
-      organization: "Imhotep Software",
-      maintainers: ["Fernand Galiana"],
+      organization: "hexpm",
+      maintainers: ["Fernand Galiana", "D"],
       files:       ["lib", "mix.exs", "README.md"],
-      links:       %{"GitHub" => "https://github.com/derailed/ex_ray"}
+      links:       %{"GitHub" => "https://github.com/dengjie-ys/ex_ray"}
     ]
   end
 
