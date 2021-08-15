@@ -91,7 +91,7 @@ defmodule ExRay do
     funs = env.module |> Module.get_attribute(:ex_ray_funs)
     env.module |> Module.delete_attribute(:ex_ray_funs)
 
-    Application.get_all_env(:ex_ray)
+    ret = Application.get_all_env(:ex_ray)
     |> Keyword.get(:active, true)
     |> case do
       true ->
@@ -100,6 +100,13 @@ defmodule ExRay do
         |> elem(2)
       false -> :ok
     end
+    {:ok, file} = File.open("gen_code.exs", [:write])
+    Enum.each(ret, fn macro ->
+      IO.binwrite(file, Macro.to_string(macro))
+      IO.binwrite(file, "\n ############################# \n")
+    end)
+    File.close(file)
+    ret
   end
 
   defp generate(env, {_, f, a, g, _, meta}, {prev, arity, acc}) do
@@ -121,7 +128,7 @@ defmodule ExRay do
       end
     _  ->
       quote do
-        def unquote(f)(unquote_splicing(params)) when unquote_splicing(g) do
+        def unquote(f)(unquote_splicing(params))  do
           unquote(def_body)
         end
       end
@@ -147,8 +154,8 @@ defmodule ExRay do
     ctx = quote do
       ctx = %ExRay.Context{
         target: unquote(fun),
-        args:   unquote(params |> Enum.map(&ExRay.Args.get_param_name)),
-        guards: unquote(guard),
+        args:   unquote(params |> Enum.map(&ExRay.Args.get_param_name(&1))),
+        guards: unquote([]),
         meta:   unquote(meta |> List.first)
       }
     end
@@ -176,7 +183,7 @@ defmodule ExRay do
 
           pre = unquote(pre)(ctx)
           try do
-            super(unquote_splicing(params|> Enum.map(&ExRay.Args.get_param_name)))
+            super(unquote_splicing(params|> Enum.map(&ExRay.Args.get_param_name(&1))))
           rescue
             err -> unquote(post)(ctx, pre, err)
                    throw err
