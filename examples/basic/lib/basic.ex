@@ -12,6 +12,19 @@ defmodule Basic do
   @spec fred(integer, integer) :: integer
   def fred(a, b), do: a+b
 
+  @trace kind: :critical
+  def fred(a) when is_binary(a) do
+    a
+  end
+
+
+  @trace kind: :critical
+  def fred(a, b) when is_binary(a) do
+    a = Integer.parse(a) |> elem(0)
+    IO.puts a
+    a+b
+  end
+
   # Called before the annotated function fred is called. Allows to start
   # a span and decorate it with tags and log information
   defp before_fun(ctx) do
@@ -25,9 +38,9 @@ defmodule Basic do
   # Called once the annotated function is called. In this hook you can
   # add addtional span info and close the span as we are all done here.
   defp after_fun(ctx, span, res) do
-    Logger.debug("<<< Closing span for `#{ctx.target}...")
-    span
-    |> :otter.log("<<< #{ctx.target} returned #{res}")
-    |> Span.close(@req_id)
+    # Logger.debug("<<< Closing span for `#{ctx.target}...")
+    # span
+    # |> :otter.log("<<< #{ctx.target} returned #{res}")
+    # |> Span.close(@req_id)
   end
 end
