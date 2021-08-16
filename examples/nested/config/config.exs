@@ -1,6 +1,6 @@
 use Mix.Config
 
-config :ex_ray,
+config :ex_ray_d,
   active: true
 
 config :otter,

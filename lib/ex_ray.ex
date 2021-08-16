@@ -91,7 +91,7 @@ defmodule ExRay do
     funs = env.module |> Module.get_attribute(:ex_ray_funs)
     env.module |> Module.delete_attribute(:ex_ray_funs)
 
-    ret = Application.get_all_env(:ex_ray)
+    ret = Application.get_all_env(:ex_ray_d)
     |> Keyword.get(:active, true)
     |> case do
       true ->
