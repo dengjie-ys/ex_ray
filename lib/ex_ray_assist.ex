@@ -1,10 +1,11 @@
 defmodule ExRayAssist do
   defmacro __using__(env) do
+    
     quote do
       require Logger
       import ExRayAssist
       alias ExRay.Span
-
+      use ExRay, pre: :before_fun, post: :after_fun
       __MODULE__
       |> Module.put_attribute(
         :ignore_trace,
@@ -43,12 +44,13 @@ defmodule ExRayAssist do
         |> Span.close(trace_id)
       end
     end
+    
+    
   end
 
   def __on_definition__(env, kind, name, args, guards, body) do
     ignore_func = env.module |> Module.get_attribute(:ignore_trace)
     get_trace_id = env.module |> Module.get_attribute(:get_trace_id)
-
     if Enum.all?(ignore_func ++ [get_trace_id], &(&1 != name)) do
       Module.put_attribute(env.module, :trace, kind: :c)
     end
