@@ -47,9 +47,15 @@ defmodule ExRay.Store do
   """
   @spec pop(String.t) :: any
   def pop(key) when is_binary(key) do
-    [h | t] = get(key)
-    :ets.insert(@table_name, {key, t})
-    h
+    vals = get(key)
+    result = if length(vals) > 0 do
+      [h | t] = vals
+      :ets.insert(@table_name, {key, t})
+      h
+    else
+      []
+    end
+    result
   end
 
   @doc """
