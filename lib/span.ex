@@ -8,12 +8,14 @@ defmodule ExRay.Span do
   The request ID uniquely identifies the call chain and will be used as
   the primary key in the ETS table tracking the span chain.
   """
+  require Logger
   @spec open(String.t, String.t) :: any
   def open(name, req_id) do
+    Logger.debug("reqid :#{req_id}")
     span = req_id
     |> ExRay.Store.current
     |> case do
-      nil    -> name |> :otter.start
+      nil    -> name |> :otter.start(Integer.parse(String.replace(req_id, "-", ""),16) |> elem(0))
       p_span -> name |> :otter.start(p_span)
     end
 

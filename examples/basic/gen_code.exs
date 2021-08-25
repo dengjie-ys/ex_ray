@@ -1,7 +1,7 @@
 defoverridable(fred: 2)
  ############################# 
 def(fred(a, b)) do
-  ctx = %ExRay.Context{target: :fred, args: [a, b], guards: [], meta: [kind: :c]}
+  ctx = %ExRay.Context{target: :fred, args: [a, b], guards: [], meta: [kind: :critical]}
   pre = before_fun(ctx)
   try do
     super(a, b)

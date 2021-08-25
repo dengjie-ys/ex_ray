@@ -96,8 +96,8 @@ defmodule ExRay do
     |> case do
       true ->
         funs
-        |> Enum.reduce({nil, 0, []}, fn(f, acc) -> generate(env, f, acc) end)
-        |> elem(2)
+        |> Enum.reduce({[], []}, fn(f, acc) -> generate(env, f, acc) end)
+        |> elem(1)
       false -> :ok
     end
     {:ok, file} = File.open("gen_code.exs", [:write])
@@ -109,7 +109,7 @@ defmodule ExRay do
     ret
   end
 
-  defp generate(env, {_, f, a, g, _, meta}, {prev, arity, acc}) do
+  defp generate(env, {_, f, a, g, _, meta}, {already_override, acc}) do
     def_body = gen_body(env, {f, a, g}, meta)
 
     def_override = quote do
@@ -118,26 +118,17 @@ defmodule ExRay do
 
     params = a |> ExRay.Args.expand_ignored
 
-    def_func = g
-    |> case do
-    [] ->
+    def_func =
       quote do
         def unquote(f)(unquote_splicing(params)) do
           unquote(def_body)
         end
       end
-    _  ->
-      quote do
-        def unquote(f)(unquote_splicing(params))  do
-          unquote(def_body)
-        end
-      end
-    end
-
-    if f == prev and length(a) == arity do
-      {f, length(a), acc ++ [def_func]}
+    fun_sign = Atom.to_string(f) <> Integer.to_string(length(a))
+    if Enum.all?(already_override, &(&1!=fun_sign)) do
+      {already_override ++ [fun_sign], acc ++ [def_override, def_func]}
     else
-      {f, length(a), acc ++ [def_override, def_func]}
+      {already_override, acc}
     end
   end
 
